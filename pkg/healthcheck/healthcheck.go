@@ -51,6 +51,17 @@ const (
 	// These checks are no run when the `--linkerd-cni-enabled` flag is set.
 	LinkerdPreInstallCapabilityChecks CategoryID = "pre-kubernetes-capability"
 
+	// LinkerdConfigChecks enabled by `linkerd check config`
+
+	// LinkerdConfigChecks adds a series of checks to validate that the Linkerd
+	// namespace, RBAC, ServiceAccounts, and CRDs were successfully created.
+	// These checks specifically validate that the `linkerd install config`
+	// command succeeded in a multi-stage install, but also applies to a default
+	// `linkerd install`.
+	// These checks are dependent on the output of KubernetesAPIChecks, so those
+	// checks must be added first.
+	LinkerdConfigChecks CategoryID = "linkerd-config"
+
 	// LinkerdControlPlaneExistenceChecks adds a series of checks to validate that
 	// the control plane namespace and controller pod exist.
 	// These checks are dependent on the output of KubernetesAPIChecks, so those
@@ -327,7 +338,7 @@ func (hc *HealthChecker) allCategories() []category {
 			},
 		},
 		{
-			id: LinkerdControlPlaneExistenceChecks,
+			id: LinkerdConfigChecks,
 			checkers: []checker{
 				{
 					description: "control plane namespace exists",
@@ -337,6 +348,11 @@ func (hc *HealthChecker) allCategories() []category {
 						return hc.CheckNamespace(hc.ControlPlaneNamespace, true)
 					},
 				},
+			},
+		},
+		{
+			id: LinkerdControlPlaneExistenceChecks,
+			checkers: []checker{
 				{
 					description: "control plane components ready",
 					hintAnchor:  "l5d-existence-psp",

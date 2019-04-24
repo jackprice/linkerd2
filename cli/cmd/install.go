@@ -234,7 +234,7 @@ control-plane.`,
 			if err != nil {
 				return err
 			}
-			if !options.ignoreCluster {
+			if !options.ignoreCluster && stage != configStage {
 				// TODO: consider cobra.SilenceUsage, so we can return errors from
 				// `RunE`, rather than calling `os.Exit(1)`
 				exitIfClusterExists()
